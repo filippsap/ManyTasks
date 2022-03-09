@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ShopASPNet.Model;
+using ShopASPNet.Model.ShopModel;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-var configuration = builder.Configuration.GetConnectionString("DefaultConnection");
+#region Authentication
+var configuration = builder.Configuration.GetConnectionString("DefaultConnection1");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -37,7 +39,12 @@ builder.Services.AddAuthentication(options =>
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
                 };
             });
+#endregion
 
+#region DbShop
+string connection = builder.Configuration.GetConnectionString("DefaultConnection2");
+builder.Services.AddDbContext<ApplicationContextShop>(options => options.UseSqlServer(connection));
+#endregion
 
 var app = builder.Build();
 
