@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
 
-        public Product[]? products { get; set; }
+        public Product[]? Products { get; set; }
     }
 }
