@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ShopASPNet.Model;
-using ShopASPNet.Model.ShopModel;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,10 +39,8 @@ builder.Services.AddAuthentication(options =>
             });
 #endregion
 
-#region DbShop
 string connection = builder.Configuration.GetConnectionString("DefaultConnectionShop");
-builder.Services.AddDbContext<ApplicationContextShop>(options => options.UseSqlServer(connection));
-#endregion
+builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection));
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -52,24 +49,23 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 app.UseRouting();
-
-
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwagger();
-// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-// specifying the Swagger JSON endpoint.
+app.UseCors(builder => builder.AllowAnyOrigin()
+                              .AllowAnyHeader());
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 });
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapSwagger();
+    endpoints.MapControllers();
 });
 
 
